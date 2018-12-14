@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { SettingsContainerComponent } from './settings';
+import { VideosComponent } from './videos/videos.component';
+import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
@@ -13,6 +15,16 @@ const routes: Routes = [
     path: 'settings',
     component: SettingsContainerComponent,
     data: { title: 'anms.menu.settings' }
+  },
+  {
+    path: 'videos',
+    component: VideosComponent,
+    data: {}
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    data: {}
   },
   {
     path: 'examples',
@@ -34,4 +46,5 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}

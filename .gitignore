@@ -9,6 +9,8 @@
 # dependencies
 /node_modules
 yarn.lock
+.yalc
+yalc.lock
 
 # IDEs and editors
 /.idea

@@ -12,6 +12,9 @@ import { Book } from '../books.model';
 import { ActionBooksUpsertOne, ActionBooksDeleteOne } from '../books.actions';
 import { selectSelectedBook, selectAllBooks } from '../books.selectors';
 
+/**
+ * A component with azerazer
+ */
 @Component({
   selector: 'anms-crud',
   templateUrl: './crud.component.html',
@@ -57,7 +60,11 @@ export class CrudComponent {
     this.bookFormGroup.setValue(book);
   }
 
-  addNew(bookForm: NgForm) {
+  /**
+   * Create a new book
+   * @param bookForm
+   */
+  addNew(bookForm: NgForm) : void {
     bookForm.resetForm();
     this.bookFormGroup.reset();
     this.bookFormGroup.setValue(CrudComponent.createBook());
@@ -66,6 +73,7 @@ export class CrudComponent {
 
   cancelEditing() {
     this.isEditing = false;
+    // This comment is useless
   }
 
   delete(book: Book) {

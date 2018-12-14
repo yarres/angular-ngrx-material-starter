@@ -11,6 +11,7 @@ export const environment = {
   production: false,
   test: false,
   i18nPrefix: '',
+  apiUrl: 'https://advr-preprod-api.hexaglobe.net',
   versions: {
     app: packageJson.version,
     angular: packageJson.dependencies['@angular/core'],

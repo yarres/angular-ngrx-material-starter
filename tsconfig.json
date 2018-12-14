@@ -1,7 +1,17 @@
 {
   "compileOnSave": false,
+  "include": [
+    "src/**/*",
+    "node_modules/videogular2/src/**/*.js"
+  ],
+  "exclude": [
+    "node_modules/videogular2/src/**/*spec.js"
+
+  ],
   "compilerOptions": {
     "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -13,6 +23,8 @@
       "node_modules/@types"
     ],
     "paths": {
+      "@angular/*": ["node_modules/@angular/*"],
+      "*": [ "node_modules/@types/*", "*"],
       "@app/*": ["app/*"],
       "@env/*": [
         "environments/*"

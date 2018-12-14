@@ -36,9 +36,12 @@
             ],
             "styles": [
               { "input": "src/styles-app-loading.scss" },
-              { "input": "src/styles.scss" }
+              { "input": "src/styles.scss" },
+              {"input":    "node_modules/videogular2/fonts/videogular.css"}
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/hls.js/dist/hls.js"
+            ]
           },
           "configurations": {
             "production": {

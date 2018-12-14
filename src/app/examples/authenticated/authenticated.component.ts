@@ -8,6 +8,9 @@ import { ROUTE_ANIMATIONS_ELEMENTS } from '@app/core';
   styleUrls: ['./authenticated.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+/**
+ * Un titre
+ */
 export class AuthenticatedComponent implements OnInit {
   routeAnimationsElements = ROUTE_ANIMATIONS_ELEMENTS;
 
