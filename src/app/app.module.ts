@@ -4,6 +4,8 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
+import { FlexLayoutModule } from '@angular/flex-layout';
+
 import { SharedModule } from '@app/shared';
 import { CoreModule } from '@app/core';
 
@@ -52,7 +54,9 @@ registerLocaleData(localeFr, 'fr');
     VgBufferingModule,
     VgStreamingModule,
     // Slider
-    Ng5SliderModule
+    Ng5SliderModule,
+
+    FlexLayoutModule
   ],
   declarations: [AppComponent, VideosComponent, LoginComponent],
   providers: [{ provide: LOCALE_ID, useValue: 'en' }],

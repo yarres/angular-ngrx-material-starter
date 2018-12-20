@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ApiService } from '../api/api.service';
+import { TokenManagerService } from '../storage/token-manager.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -14,7 +15,7 @@ export class LoginComponent implements OnInit {
     password: new FormControl('')
   });
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private tokenManager: TokenManagerService) {
   }
 
   ngOnInit() {
@@ -22,15 +23,17 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(event) {
-    console.log('FORM content', event);
-    this.login(this.loginForm.username, this.loginForm.password);
+    console.log('FORM content', this.loginForm);
+    this.login(this.loginForm);
   }
 
-  login(username, password): any {
-    return this.api.login(username, password).subscribe((res) => {
-        console.log('RESPONSE', res);
-      }
-    );
+  login(form): any {
+    return this.api.login(form)
+      .subscribe((res) => {
+          console.log('RESPONSE', res);
+          this.tokenManager.store(res);
+        }
+      );
   }
 
 }

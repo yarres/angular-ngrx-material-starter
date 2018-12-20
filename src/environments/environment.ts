@@ -12,6 +12,7 @@ export const environment = {
   test: false,
   i18nPrefix: '',
   apiUrl: 'https://advr-preprod-api.hexaglobe.net',
+  apiCutUrl: 'https://advr-preprod-cut.hexaglobe.net',
   versions: {
     app: packageJson.version,
     angular: packageJson.dependencies['@angular/core'],

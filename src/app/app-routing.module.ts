@@ -6,11 +6,11 @@ import { VideosComponent } from './videos/videos.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'about',
-    pathMatch: 'full'
-  },
+  /*  {
+      path: '',
+      redirectTo: 'about',
+      pathMatch: 'full'
+    },*/
   {
     path: 'settings',
     component: SettingsContainerComponent,
@@ -29,11 +29,11 @@ const routes: Routes = [
   {
     path: 'examples',
     loadChildren: 'app/examples/examples.module#ExamplesModule'
-  },
-  {
+  }
+  /*{
     path: '**',
     redirectTo: 'about'
-  }
+  }*/
 ];
 
 @NgModule({
