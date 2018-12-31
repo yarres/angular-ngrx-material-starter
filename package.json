@@ -37,8 +37,7 @@
     "doc": "./node_modules/.bin/compodoc -p src/tsconfig.app.json"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "lint-staged": {
     "{src,e2e,cypress}/**/*.{ts,json,md,scss}": [
@@ -77,6 +76,9 @@
     "core-js": "^2.5.4",
     "hammerjs": "^2.0.8",
     "hls.js": "^0.11.0",
+    "lodash": "^4.17.11",
+    "m3u8-parser": "^4.2.0",
+    "moment": "^2.23.0",
     "ng5-slider": "^1.1.8",
     "nouislider": "^12.1.0",
     "rxjs": "^6.3.3",

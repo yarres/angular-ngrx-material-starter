@@ -4,6 +4,9 @@ import { VgAPI } from 'videogular2/core';
 import { Options } from 'ng5-slider';
 import { ApiService } from '../api/api.service';
 import { fromEvent, Observable } from 'rxjs';
+import { keys, toPairs, forIn } from 'lodash';
+import moment from 'moment';
+
 
 @Component({
   selector: 'anms-videos',
@@ -24,7 +27,14 @@ export class VideosComponent implements OnInit {
   hlsBitrates: any;
   currentThumbnail$: Observable<string>;
 
+  thumbnails: Array<any>;
+
   // Video stream
+  startTimestamp: number;
+  endTimestamp: number;
+  startTime: string;
+  endTime: string;
+  totalTime: any;
   duration: number;
   tcinSec: number;
   tcoutSec: number;
@@ -32,13 +42,13 @@ export class VideosComponent implements OnInit {
   tcout: string;
   // Slider
   minValue = 0;
-  maxValue = 5;
+  maxValue = 35;
   options: Options = {
-    floor: 0,
+    // floor: 0,
     // ceil: 600,
-    // translate: this.secondsToMinutesAndSeconds(value),
+   
     //  step: 2,
-    tickStep: 10,
+   // tickStep: 10,
     /* showTicks: true,*/
     minRange: 5,
     pushRange: true,
@@ -50,7 +60,16 @@ export class VideosComponent implements OnInit {
     this.api = api;
   }
 
+  createDateRange(): Date[] {
+    const dates: Date[] = [];
+    for (let i = 1; i <= 31; i++) {
+      dates.push(new Date(2018, 5, i));
+    }
+    return dates;
+  }
+
   getChannels() {
+    console.log('IN get channels')
     this.internalApi.getChannels().subscribe((res) => {
       const channel: any = res[0].encodingInstances[0];
       console.log('Channels', channel);
@@ -122,7 +141,7 @@ export class VideosComponent implements OnInit {
     }
   }
 
-  // setTci()
+  // Current time and end time on the player and in the timeline should be the programdatetime of the stream and not the current time
 
   onPlayerReady(api) {
     this.api = api;
@@ -133,10 +152,14 @@ export class VideosComponent implements OnInit {
       console.log('HLS Bitrate', this.hlsBitrates);
       this.duration = res.target.duration;
       console.log('TARGET ===', res.target);
-      this.options.ceil = this.duration;
+      console.log('THIS DURATION', this.duration)
       this.options = {
         floor: 0,
+        // Ceil doit avoir pour valeur le timestamp final du stream (this.endTimestamp) qui doit ensuite être transposé en hh:mm:ss
         ceil: this.duration,
+        translate: (value: number) : string => {
+          return this.secondsToMinutesAndSeconds(value);
+        },
         // translate: this.secondsToMinutesAndSeconds(value),
         //  step: 2,
         tickStep: 10,
@@ -174,36 +197,44 @@ export class VideosComponent implements OnInit {
     console.log('EVENT', event);
     // Fetch the current frame with timecode and thumbnail ?
     console.log('HLS', hls.hls);
-    console.log('HLS', hls);
-    // Wrap hls event in an RXJS observer
-    fromEvent(hls.hls, 'hlsFragLoaded').subscribe((val) => {
-        this.thumb = val[1].frag.tagList[2][1];
-      }
-    );
+   
+    this.api.getMediaById('myVideo').subscriptions.loadedData.subscribe((res) => {
+      const duration = res.target.duration;
+      console.log('HLS DURATION 1', duration)
+      console.log('HLS TARGET', res.target)
+
+      // Fetch the thumbnail from the currentTime of the video
+      fromEvent(hls.hls, 'hlsFragLoaded').subscribe((val) => {
+          console.log('Event FRAG', val);
+          // Get the thumb for TCIN (currentTime of video)
+          // BUG 1: si on bouge le curseur du player on change le thumb (alors qu'il ne devrait changer que si le curseur de la timeline bouge)
+          // BUG 2 : on ne peut pas afficher le thumb pour le TCOUT
+          console.log('THUMB TCIN ET OUT', this.tcinSec, this.tcoutSec)
+          console.log('HLS FRAG ===', val[1].frag);
+          const currentFragmentTimestamp = val[1].frag.programDateTime;
+          console.log('CURRENT TIMESTAMP', currentFragmentTimestamp)
+          const secondsElapsed = val[1].frag.start;
+          console.log('SECONDS ELAPSED', secondsElapsed);
+          // Convert ms to sec
+          this.startTimestamp = (currentFragmentTimestamp / 1000) - secondsElapsed ;
+          console.log('FIRST TIMESTAMP', this.startTimestamp)
+          console.log('DURATION 2', duration)
+          this.endTimestamp = this.startTimestamp + duration;
+          console.log('END TIMESTAMP', this.endTimestamp)
+
+          this.startTime = moment.unix( this.startTimestamp).format('HH:mm:ss');
+          this.endTime = moment.unix( this.endTimestamp).format('HH:mm:ss');
+          // Time is local dateTime and not GMT
+          console.log('STARTIME ENDTIME', this.startTime, this.endTime);
+
+          this.thumb = val[1].frag.tagList[2][1];
+          console.log('THUMB in ongetBitrates', this.thumb)
+        }
+      );
+    })
+
   }
 
-  getCurrentThumbnail(): Observable<any> {
-    /* this.currentThumbnail$.subscribe((th) => {
-       console.log('THumb', th);
-     });*/
-    return this.currentThumbnail$;
-  }
-
-  /*  onFragLoaded(event, data): void {
-      console.log('EVENT', event);
-      const fragTimestamp = data.frag.programDateTime;
-      const fragThumbnail = data.frag.tagList[2][1];
-      console.log('Timestamp', fragTimestamp / 1000);
-      console.log('Thumbnail', fragThumbnail);
-      this.currentThumbnail$ = of(`https:${fragThumbnail}`);
-      console.log('Current thumbnail', this.currentThumbnail$);
-      const self = this;
-      /!* this.currentThumbnail$.subscribe(function(response) {
-         console.log('THUMB in onfragloaded', response);
-         self.thumb = response;
-         self.test = 'zerazer';
-       });*!/
-    }*/
 
   private secondsToMinutesAndSeconds(dataSeconds: number): string {
     const minutes = Math.floor(dataSeconds / 60);
@@ -211,6 +242,10 @@ export class VideosComponent implements OnInit {
     return `${minutes}:${seconds < 10 ? 0 : ''}${seconds}`;
   }
 
+  /**
+   * Launched when the userChange event is fired from the timeline
+   * @param val
+   */
   updateValue(val) {
     console.log('VAL', val);
     this.api.getMediaById('myVideo').currentTime = val.value;
@@ -218,6 +253,8 @@ export class VideosComponent implements OnInit {
     this.tcoutSec = val.highValue;
     this.tcin = this.secondsToMinutesAndSeconds(val.value);
     this.tcout = this.secondsToMinutesAndSeconds(val.highValue);
+
+    // Voir comment obtenir le thumb pour le tcout
     /* let minutes = Math.floor(val.value / 60);
      let seconds = val.value % 60;*/
 
@@ -239,10 +276,4 @@ export class VideosComponent implements OnInit {
     console.log('EVENT cuepoint', event);
   }
 
-
-  public ngAfterViewChecked(): void {
-    /* need _canScrollDown because it triggers even if you enter text in the textarea */
-
-    this.getCurrentThumbnail();
-  }
 }

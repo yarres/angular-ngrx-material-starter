@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SettingsContainerComponent } from './settings';
 import { VideosComponent } from './videos/videos.component';
 import { LoginComponent } from './login/login.component';
+import { HlsParseComponent } from './video-tools/hls-parse/hls-parse.component';
 
 const routes: Routes = [
   /*  {
@@ -29,6 +30,11 @@ const routes: Routes = [
   {
     path: 'examples',
     loadChildren: 'app/examples/examples.module#ExamplesModule'
+  },
+  {
+    path: 'parseFile',
+    component: HlsParseComponent,
+    data: {}
   }
   /*{
     path: '**',

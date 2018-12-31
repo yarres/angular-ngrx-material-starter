@@ -1,16 +1,33 @@
 <div class="containerX videoRow">
     <div fxLayout='row' class="zero">
-        <vg-player (onPlayerReady)="onPlayerReady($event)" fxFlex="1280px" class="one" fxLayout="row">
+        <vg-player (onPlayerReady)="onPlayerReady($event)" fxFlex="1024px" class="one" fxLayout="row">
+                <vg-overlay-play></vg-overlay-play>
+                <vg-buffering></vg-buffering>
+                <vg-controls vgFor="myVideo" [vgAutohide]="true" [vgAutohideTime]="5">
+                    <vg-play-pause></vg-play-pause>
+                    <vg-time-display vgFor="myVideo" [vgProperty]="'current'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
+                    <vg-scrub-bar vgFor="myVideo" [vgSlider]="true">
+                        <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                        <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+                        <!--
+                                    <anms-scrub-bar-thumbnails [totalTime]="totalTime" [duration]="duration" [vgThumnails]="thumbnails"></anms-scrub-bar-thumbnails>
+                        -->
+                    </vg-scrub-bar>
+                    <vg-time-display vgFor="myVideo" [vgProperty]="'left'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
+                    <vg-playback-button [playbackValues]="[ '1.0', '2.0', '4.0' ]"></vg-playback-button>
+                    <vg-track-selector vgFor="myVideo"></vg-track-selector>
+                    <vg-volume vgFor="myVideo"></vg-volume>
+                        <!-- more components here -->
+                </vg-controls>
             <video #vgMedia
                    #vgHls="vgHls"
                    [vgMedia]="vgMedia"
                    [vgHls]="'../assets/playlist.m3u8'"
-                   (onGetBitrates)="onGetBitrates($event, vgHls)"
+                   (onGetBitrates)="onGetBitrates($event, vgHls, tcin, tcout)"
                    id="myVideo"
-                   controls
+                   
                    crossorigin
             >
-                <!-- type="video/mp4"-->
 
                 <track
                         src="../../assets/default.vtt"
@@ -32,7 +49,7 @@
                     <button mat-button (click)="seekTcOut($event)">Seek</button>
                 </mat-chip>
             </mat-chip-list>
-
+            <img [src]="'http:'+thumb">
         </div>
     </div>
 </div>
@@ -44,18 +61,7 @@
                 [options]="options"
                 (userChange)="updateValue($event)"
         ></ng5-slider>
-        <img [src]="'http:'+thumb">
-        <p>{{currentThumbnail$ | async}}</p>
-        <p>{{currentThumbnail$ | async}}</p>
-        <div *ngIf="currentThumbnail$ | async as currentThumbnail">
-            <p>{{currentThumbnail}}</p>
-        </div>
-        <p>{{ duration }}</p>
-        <p>{{ thumb }}</p>
-        <p>{{ test }}</p>
-        <p>{{ vgMedia }}</p>
-
-    </div>
+     </div>
 </div>
 
 

@@ -8,8 +8,19 @@ vg-player {
   height: auto;
 }
 
+.padding-hor-10 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+
 .custom-slider .ng5-slider {
   height: 90px;
+
+  .ng5-slider-bar-wrapper {
+    margin-top: 0;
+    padding-top: 19px;
+  }
 }
 
 // We need to use ::ng-deep to overcome view encapsulation
@@ -19,15 +30,27 @@ vg-player {
   }
 
   .custom-slider .ng5-slider .ng5-slider-selection {
-
+    border-top: solid 3px firebrick;
+    border-bottom: solid 3px firebrick;
   }
 
   .custom-slider .ng5-slider .ng5-slider-pointer {
-    width: 6px;
+    cursor: col-resize;
+    width: 3px;
     height: 104px;
     color: firebrick !important;
     background-color: firebrick !important;
     border-radius: 0;
+    &::before {
+      content: '';
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-radius: 7.5px;
+      background-color: #b22222;
+      right: 5px;
+      position: relative;
+    }
 
   }
 

@@ -59,6 +59,7 @@ export class ApiService {
         headers: new HttpHeaders({
           'Content-type': 'application/x-www-form-urlencoded',
           /*   'Access-Control-Allow-Origin': '*',*/
+  
           'ApiKey': `${token.apikey}`
           /* 'Access-Control-Allow-Origin': 'https://advr-preprod-api.hexaglobe.net/'*/
         })
@@ -70,7 +71,10 @@ export class ApiService {
 
 
   getPlaylist(channel: any) {
-    return `${this.apiCutUrl}/getPlaylist.php?channel=${channel.alternativeIdentifier}&start=1545124860`;
+    const defaultVideoStream = `${this.apiCutUrl}/getPlaylist.php?channel=${channel.alternativeIdentifier}`;
+    console.log('DEFAULT VIDEO STREAM', defaultVideoStream)
+    return defaultVideoStream;
+    // For now the direct stream is not usable (the urls of the .ts files are relative)
 
   }
 }

@@ -26,6 +26,8 @@ import { VideosComponent } from './videos/videos.component';
 
 import { Ng5SliderModule } from 'ng5-slider';
 import { LoginComponent } from './login/login.component';
+import { ScrubBarThumbnailsComponent } from './video-tools/scrub-bar-thumbnails/scrub-bar-thumbnails.component';
+import { HlsParseComponent } from './video-tools/hls-parse/hls-parse.component';
 
 // the second parameter 'fr' is optional
 registerLocaleData(localeFr, 'fr');
@@ -58,7 +60,7 @@ registerLocaleData(localeFr, 'fr');
 
     FlexLayoutModule
   ],
-  declarations: [AppComponent, VideosComponent, LoginComponent],
+  declarations: [AppComponent, VideosComponent, LoginComponent, ScrubBarThumbnailsComponent, HlsParseComponent],
   providers: [{ provide: LOCALE_ID, useValue: 'en' }],
   bootstrap: [AppComponent]
 })

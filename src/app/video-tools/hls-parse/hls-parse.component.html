@@ -1,0 +1,9 @@
+<p>
+  <label>Fichier m3u8</label>
+  <input type="file"
+  id="file"
+  (change)="handleFileInput($event.target.files)">
+  <button type="button" class="btn btn-primary" 
+    (click)="fileParse()">Upload File
+    </button>
+</p>
