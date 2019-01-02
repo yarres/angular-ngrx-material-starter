@@ -29,9 +29,16 @@ vg-player {
     height: 90px;
   }
 
-  .custom-slider .ng5-slider .ng5-slider-selection {
-    border-top: solid 3px firebrick;
-    border-bottom: solid 3px firebrick;
+  .ng5-slider {
+    .ng5-slider-bar {
+      background: rgba(35, 35, 35, 0.83) !important;
+
+      &.ng5-slider-selection {
+        border-top: solid 3px firebrick;
+        border-bottom: solid 3px firebrick;
+        background-color: #4c555a !important;
+      }
+    }
   }
 
   .custom-slider .ng5-slider .ng5-slider-pointer {
@@ -41,6 +48,7 @@ vg-player {
     color: firebrick !important;
     background-color: firebrick !important;
     border-radius: 0;
+
     &::before {
       content: '';
       display: block;

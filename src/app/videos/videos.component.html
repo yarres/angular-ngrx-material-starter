@@ -1,67 +1,68 @@
-<div class="containerX videoRow">
-    <div fxLayout='row' class="zero">
-        <vg-player (onPlayerReady)="onPlayerReady($event)" fxFlex="1024px" class="one" fxLayout="row">
-                <vg-overlay-play></vg-overlay-play>
-                <vg-buffering></vg-buffering>
-                <vg-controls vgFor="myVideo" [vgAutohide]="true" [vgAutohideTime]="5">
-                    <vg-play-pause></vg-play-pause>
-                    <vg-time-display vgFor="myVideo" [vgProperty]="'current'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
-                    <vg-scrub-bar vgFor="myVideo" [vgSlider]="true">
-                        <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-                        <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
-                        <!--
-                                    <anms-scrub-bar-thumbnails [totalTime]="totalTime" [duration]="duration" [vgThumnails]="thumbnails"></anms-scrub-bar-thumbnails>
-                        -->
-                    </vg-scrub-bar>
-                    <vg-time-display vgFor="myVideo" [vgProperty]="'left'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
-                    <vg-playback-button [playbackValues]="[ '1.0', '2.0', '4.0' ]"></vg-playback-button>
-                    <vg-track-selector vgFor="myVideo"></vg-track-selector>
-                    <vg-volume vgFor="myVideo"></vg-volume>
-                        <!-- more components here -->
-                </vg-controls>
-            <video #vgMedia
-                   #vgHls="vgHls"
-                   [vgMedia]="vgMedia"
-                   [vgHls]="'../assets/playlist.m3u8'"
-                   (onGetBitrates)="onGetBitrates($event, vgHls, tcin, tcout)"
-                   id="myVideo"
-                   
-                   crossorigin
+<div fxLayout="row" class="containerX videoRow zero fxLayoutWrap">
+    <vg-player (onPlayerReady)="onPlayerReady($event)" fxFlex="70" fxLayoutGap="0.5%" class="one">
+        <vg-overlay-play></vg-overlay-play>
+        <vg-buffering></vg-buffering>
+        <vg-controls vgFor="myVideo" [vgAutohide]="true" [vgAutohideTime]="5">
+            <vg-play-pause></vg-play-pause>
+            <vg-time-display vgFor="myVideo" [vgProperty]="'current'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
+            <vg-scrub-bar vgFor="myVideo" [vgSlider]="true">
+                <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+                <!--
+                            <anms-scrub-bar-thumbnails [totalTime]="totalTime" [duration]="duration" [vgThumnails]="thumbnails"></anms-scrub-bar-thumbnails>
+                -->
+            </vg-scrub-bar>
+            <vg-time-display vgFor="myVideo" [vgProperty]="'left'" [vgFormat]="'hh:mm:ss'"></vg-time-display>
+            <vg-playback-button [playbackValues]="[ '1.0', '2.0', '4.0' ]"></vg-playback-button>
+            <vg-track-selector vgFor="myVideo"></vg-track-selector>
+            <vg-volume vgFor="myVideo"></vg-volume>
+            <!-- more components here -->
+        </vg-controls>
+        <video #vgMedia
+               #vgHls="vgHls"
+               [vgMedia]="vgMedia"
+               [vgHls]="'../assets/playlist.m3u8'"
+               (onGetBitrates)="onGetBitrates($event, vgHls, tcin, tcout)"
+               id="myVideo"
+               crossorigin
+        >
+            <track
+                    src="../../assets/default.vtt"
+                    kind="metadata"
+                    label="Cue Points"
+                    vgCuePoints
+                    (onEnterCuePoint)="onEnterCuePoint($event)"
             >
-
-                <track
-                        src="../../assets/default.vtt"
-                        kind="metadata"
-                        label="Cue Points"
-                        vgCuePoints
-                        (onEnterCuePoint)="onEnterCuePoint($event)"
-                >
-            </video>
-        </vg-player>
+        </video>
+    </vg-player>
 
 
-        <div fxFlex="30" class="two" fxLayout="row" fxFlexFill>
-            <mat-chip-list>
-                <mat-chip>TCIN: {{tcin}}
-                    <button mat-button (click)="seekTcIn($event)">Seek</button>
-                </mat-chip>
-                <mat-chip>TCOUT: {{tcout}}
-                    <button mat-button (click)="seekTcOut($event)">Seek</button>
-                </mat-chip>
-            </mat-chip-list>
-            <img [src]="'http:'+thumb">
-        </div>
+    <div fxFlex="50" class="two">
+        <mat-chip-list>
+            <mat-chip>TCIN: {{tcin}}
+                <button mat-button (click)="seekTcIn($event)">Seek</button>
+            </mat-chip>
+            <mat-chip>TCOUT: {{tcout}}
+                <button mat-button (click)="seekTcOut($event)">Seek</button>
+            </mat-chip>
+        </mat-chip-list>
+
+        <img [src]="'http:'+thumb">
+    </div>
+    <div fxFlex="50">
+        <p>Duration: {{getCutDuration(tcInTimestamp, tcOutTimestamp)}}</p>
     </div>
 </div>
+
 <div class="containerX">
     <div class="custom-slider" fxFlex="column" fxFlexFill>
         <ng5-slider
-                [(value)]="minValue"
-                [(highValue)]="maxValue"
-                [options]="options"
+                [(value)]="tcInTimestamp ? tcInTimestamp : tLminValue"
+                [(highValue)]="tcOutTimestamp ? tcOutTimestamp : tLmaxValue"
+                [options]="tLoptions"
                 (userChange)="updateValue($event)"
         ></ng5-slider>
-     </div>
+    </div>
 </div>
 
 
