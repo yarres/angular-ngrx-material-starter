@@ -27,6 +27,12 @@ vg-player {
   }
 }
 
+.cuepoints {
+  background: #c2c2c2;
+  width: auto;
+  height: 120px;
+}
+
 // We need to use ::ng-deep to overcome view encapsulation
 ::ng-deep {
   .custom-slider .ng5-slider .ng5-slider-bar {
@@ -90,4 +96,5 @@ vg-player {
 
   }
 }
+
 
