@@ -13,6 +13,10 @@ vg-player {
   padding-right: 10px;
 }
 
+.resizable {
+  resize: both;
+  overflow: auto;
+}
 
 .custom-slider .ng5-slider {
   height: 90px;

@@ -5,7 +5,7 @@ import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-
+import { GridModule } from '@angular/flex-layout/grid';
 import { SharedModule } from '@app/shared';
 import { CoreModule } from '@app/core';
 
@@ -57,7 +57,7 @@ registerLocaleData(localeFr, 'fr');
     VgStreamingModule,
     // Slider
     Ng5SliderModule,
-
+    GridModule,
     FlexLayoutModule
   ],
   declarations: [AppComponent, VideosComponent, LoginComponent, ScrubBarThumbnailsComponent, HlsParseComponent],
