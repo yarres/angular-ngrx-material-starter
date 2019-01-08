@@ -24,7 +24,7 @@
                #vgHls="vgHls"
                [vgMedia]="vgMedia"
                [vgHls]="'../assets/playlist.m3u8'"
-               (onGetBitrates)="onGetBitrates($event, vgHls, tcin, tcout)"
+               (onGetBitrates)="onGetBitrates($event, vgHls)"
                id="myVideo"
                crossorigin
         >
@@ -65,15 +65,27 @@
 
     </div>
     <mat-card gdColumn="3" gdRow="2/3">Sequence duration: {{getCutDuration(tcInTimestamp, tcOutTimestamp)}}</mat-card>
-    <div class="custom-slider" gdColumn="1/5" gdRow="3">
-        <ng5-slider
-                [(value)]="tcInTimestamp ? tcInTimestamp : tLminValue"
-                [(highValue)]="tcOutTimestamp ? tcOutTimestamp : tLmaxValue"
-                [options]="tLoptions"
-                (userChange)="updateValue($event)"
-        ></ng5-slider>
+    <div gdColumns="repeat(12, 1fr)" gdGap="0px"  class="custom-slider" gdColumn="1/5" gdRow="3">
+        <div class="thumbnails" *ngFor="let thumbnail of thumbnails" >
+            <div class="thumb-time">
+                {{thumbnail.time}}
+            </div>
+            <img  class="timeline-image" src="{{thumbnail.src}}" alt="img">
+        </div>
+
+
+
     </div>
-    <div class="cuepoints" gdColumn="1/5" gRow="4"></div>
+    <ng5-slider
+            gdColumn="1/5" gRow="4"
+            [(value)]="tcInTimestamp ? tcInTimestamp : tLminValue"
+            [(highValue)]="tcOutTimestamp ? tcOutTimestamp : tLmaxValue"
+            [options]="tLoptions"
+            (userChange)="updateValue($event)"
+    >
+
+    </ng5-slider>
+    <div class="cuepoints" gdColumn="1/5" gRow="5"></div>
 </div>
 
 <!-- [vgHls]="'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8'"-->

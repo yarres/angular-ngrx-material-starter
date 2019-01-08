@@ -5,8 +5,13 @@ import { Options } from 'ng5-slider';
 import { ApiService } from '../api/api.service';
 import { fromEvent, Observable } from 'rxjs';
 import moment from 'moment';
+import { remove, get } from 'lodash';
 
-
+interface Thumb {
+  src: string,
+  sn: number,
+  time: string
+}
 @Component({
   selector: 'anms-videos',
   templateUrl: './videos.component.html',
@@ -14,7 +19,6 @@ import moment from 'moment';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VideosComponent implements OnInit {
-
   constructor(api: VgAPI, private internalApi: ApiService) {
     this.api = api;
   }
@@ -27,13 +31,16 @@ export class VideosComponent implements OnInit {
   vgHls: any;
 
   thumb: string;
+  allThumbnails = [];
   test: string;
   currentChannel: string;
   currentHlsStream: string;
   hlsBitrates: any;
   currentThumbnail$: Observable<string>;
 
-  thumbnails: Array<any>;
+  thumbnails: Thumb[] = [];
+
+  fragments : any;
 
   // Video stream
   startTimestamp: number;
@@ -157,17 +164,89 @@ export class VideosComponent implements OnInit {
   }
 
 
+  private fetchThumbnails(fragments, limit = 12) {
+    const allThumbs = [];
+    const timelineThumbs = [];
+    fragments.forEach((frag: any, index) => {
+      console.log('HLS filter frag', frag );
+      const thumb = frag.tagList.filter((value) => {
+        console.log('HLS filter value', value );
+        if (value[0] === 'EXT-X-THUMBNAIL') {
+          return value;
+        }
+      })[0];
+
+      console.log('HLS filter thumb', thumb );
+      const  fragmentDate = frag.rawProgramDateTime;
+      console.log('HLS filter fragment date', fragmentDate );
+      const date = moment(fragmentDate);
+
+      console.log('HLS filter fragment date date', date );
+      console.log('HLS filter this thumbnails before', this.thumbnails );
+
+
+        if (timelineThumbs.length < limit) {
+          timelineThumbs.push({
+            src: `https:${thumb[1]}`,
+            time: date.format('HH:mm:ss'),
+            sn: frag.sn
+          });
+        }
+
+        allThumbs.push({
+          src: `https:${thumb[1]}`,
+          time: date.format('HH:mm:ss'),
+          sn: frag.sn
+        });
+
+    })
+
+    return { all: allThumbs, timeline: timelineThumbs };
+  }
+
   /**
    * Get info from the video stream when it starts to be received
    * @param event
    * @param hls
    */
   onGetBitrates(event, hls) {
-    console.log('EVENT', event);
+    console.log('onGetBitrates EVENT', event);
     // Fetch the current frame with timecode and thumbnail ?
-    console.log('HLS', hls.hls);
+    console.log('onGetBitrates HLS', hls.hls);
+
+    fromEvent(hls.hls, 'hlsLevelLoaded').subscribe((ev) => {
+      console.log('onGetBitrates hlsLevelLoaded ev', ev );
+      const fragments = ev[1].details.fragments;
+      // Store all the thumbnails with their time
+
+      // Get the thumb for tcin and tcout if possible
+    //  console.log('THUMB TCIN ET OUT 1', this.tcInTimestamp, this.tcOutTimestamp, this.tcin, this.tcout, this.tcinSec);
+
+      console.log('onGetBitrates HLS LOADED DATA', fragments);
+      const moduloValue = Math.ceil(fragments.length / 12);
+      const reducedArr = remove(fragments, (el, ind) => {
+        return ind % moduloValue === 0
+    });
+      // Get default zoom 12 thumbnails at regular intervals
+      this.thumbnails = this.fetchThumbnails(reducedArr, 12).timeline;
+      this.allThumbnails = this.fetchThumbnails(fragments).all;
+      console.log('onGetBitrates allThumbnails', this.allThumbnails);
+
+      console.log('onGetBitrates HLS this fragments', fragments )
+      // Faire un traitement lodash filter ou get pour n'obtenir que les tagList puis ne garder que les src des thumbs et leur time
+      const tagList = fragments.map((item) => {
+        return item.tagList
+      });
+      console.log('onGetBitrates HLS tagList', tagList);
+
+      console.log('onGetBitrates HLS reducedArr', reducedArr);
+      console.log('onGetBitrates HLS thumbnails', this.thumbnails);
+    });
+
+    console.log('HLS thumbnails 2', this.thumbnails);
 
     this.api.getMediaById('myVideo').subscriptions.loadedData.subscribe((res) => {
+      console.log('loadedData res', res )
       const duration = res.target.duration;
       console.log('HLS DURATION 1', duration);
       console.log('HLS TARGET', res.target);
@@ -178,7 +257,6 @@ export class VideosComponent implements OnInit {
           console.log('HLSFRAG LOADED currentTime', this.api.currentTime);
 
           // Get the thumb for TCIN (currentTime of video)
-          // BUG 1: si on bouge le curseur du player on change le thumb (alors qu'il ne devrait changer que si le curseur de la timeline bouge)
           // BUG 2 : on ne peut pas afficher le thumb pour le TCOUT
           console.log('THUMB TCIN ET OUT', this.tcinSec, this.tcoutSec);
           console.log('HLS FRAG ===', val[1].frag);
@@ -197,8 +275,6 @@ export class VideosComponent implements OnInit {
           this.startTime = moment.unix(this.startTimestamp).format('HH:mm:ss');
           this.endTime = moment.unix(this.endTimestamp).format('HH:mm:ss');
 
-          // TODO: get the duration of the
-
           this.thumb = val[1].frag.tagList[2][1];
           console.log('THUMB in ongetBitrates', this.thumb);
           // Timeline configuration
@@ -210,10 +286,6 @@ export class VideosComponent implements OnInit {
           console.log('tcoutSec', this.tcoutSec);
           console.log('tcin timestamp', this.tcInTimestamp);
           console.log('tcout timestamp', this.tcOutTimestamp);
-          /*   this.tcInTimestamp = this.tLminValue;
-             this.tcOutTimestamp = this.tLmaxValue;*/
-          // The first time the timeline is loaded floor should be the start timestamp and and ceil the end timestamp
-          // The next times, floor should be this.tcinTimestamp & ceil => this.tcoutTimestamp
           console.log('this.tcInTimestamp > this.tLminValue', this.tcInTimestamp <= this.tLminValue);
           console.log('this.tcoutTimestamp > this.tLmaxvalue', this.tcOutTimestamp >= this.tLmaxValue);
 
@@ -240,7 +312,6 @@ export class VideosComponent implements OnInit {
     });
   }
 
-
   private secondsToMinutesAndSeconds(dataSeconds: number): string {
     const minutes = Math.floor(dataSeconds / 60);
     const seconds = dataSeconds % 60;
@@ -255,7 +326,7 @@ export class VideosComponent implements OnInit {
    * @param val
    */
   updateValue(val) {
-    console.log('VAL', val);
+    console.log('updateValue VAL', val);
     this.api.getMediaById('myVideo').currentTime = val.value;
     this.tcinSec = val.value;
     this.tcoutSec = val.highValue;
@@ -264,6 +335,7 @@ export class VideosComponent implements OnInit {
     this.tcin = this.timestampToHMS(val.value);
     this.tcout = this.timestampToHMS(val.highValue);
     // TODO 3 Voir comment obtenir le thumb pour le tcout
+    console.log('updateValue all', this.tcinSec, this.tcoutSec, this.tcInTimestamp, this.tcoutSec, this.tcin, this.tcout )
   }
 
   /**
@@ -271,6 +343,7 @@ export class VideosComponent implements OnInit {
    * @param val
    */
   seekTcIn(val: Event) {
+    console.log('seekTCIn', this.tcinSec, this.startTimestamp )
     this.api.seekTime(this.tcinSec - this.startTimestamp);
   }
 
@@ -290,7 +363,6 @@ export class VideosComponent implements OnInit {
     const duration = moment.utc(secondsDiff * 1000).format('HH:mm:ss');
 
     // const duration = moment.duration(startMoment.diff(endMoment));
-    console.log('duration', duration);
     if (!start || !end) {
       return '00:00:00';
     }
